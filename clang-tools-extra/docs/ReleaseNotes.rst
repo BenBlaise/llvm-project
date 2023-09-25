@@ -152,6 +152,11 @@ New checks
   Flags coroutines that suspend while a lock guard is in scope at the
   suspension point.
 
+- New :doc:`misc-literal-cast
+  <clang-tidy/checks/misc/literal-cast>` check.
+
+  FIXME: add release notes.
+
 - New :doc:`modernize-use-constraints
   <clang-tidy/checks/modernize/use-constraints>` check.
 
