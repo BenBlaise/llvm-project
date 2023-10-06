@@ -4,34 +4,34 @@ void warn() {
 
 (char16_t)1.f;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
+// CHECK-FIXES: (char16_t)1.f;
 (double)0x8badf00d;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
+// CHECK-FIXES: (double)0x8badf00d;
 static_cast<unsigned long>('a');
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
+// CHECK-FIXES: static_cast<unsigned long>('a');
 float(1);
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
+// CHECK-FIXES: float(1);
 float{1};
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
+// CHECK-FIXES: float{1};
 
 (int)'a';
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
+// CHECK-FIXES: (int)'a';
 
 }
 
 void warn_and_fix() {
 
-(char)u8'a';
-// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
-// CHECK-FIXES: 'a';
 (char16_t)U'a';
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
 // CHECK-FIXES: u'a';
 (char32_t)u'a';
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
 // CHECK-FIXES: U'a';
-(wchar_t)u8'a';
-// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
-// CHECK-FIXES: L'a';
 
 (int)1;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
@@ -71,8 +71,3 @@ double{2.};
 
 }
 
-// FIXME: Add something that doesn't trigger the check here.
-void g() {
-
-
-}

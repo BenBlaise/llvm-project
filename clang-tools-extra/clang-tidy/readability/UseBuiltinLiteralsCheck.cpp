@@ -79,10 +79,10 @@ void UseBuiltinLiteralsCheck::registerMatchers(MatchFinder *Finder) {
       this);
   Finder->addMatcher(
       explicitCastExpr(
-          optionally(has(initListExpr(has(ignoringParenImpCasts(anyOf(
+          has(initListExpr(has(ignoringParenImpCasts(anyOf(
               characterLiteral().bind("char"),
 			  integerLiteral().bind("int"),
-              floatLiteral().bind("float"))))))))
+              floatLiteral().bind("float")))))))
           .bind("expr"),
       this);
 }
@@ -124,9 +124,12 @@ void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
     Fix.append(FloatSuffix[CastTypeStr]);
   }
 
-  diag(MatchedCast->getExprLoc(), "use builtin literals instead of casts")
-      << FixItHint::CreateReplacement(MatchedCast->getSourceRange(),
-                                      Fix.c_str());
+  if(!Fix.empty()){
+    diag(MatchedCast->getExprLoc(), "use builtin literals instead of casts")
+	  << FixItHint::CreateReplacement(MatchedCast->getSourceRange(), Fix.c_str());
+  } else {
+    diag(MatchedCast->getExprLoc(), "use builtin literals instead of casts");
+  }
 }
 
 } // namespace clang::tidy::readability
