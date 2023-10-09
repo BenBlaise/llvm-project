@@ -93,7 +93,7 @@ void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
   const auto *MatchedCast = Result.Nodes.getNodeAs<ExplicitCastExpr>("expr");
   assert(MatchedCast);
   std::string CastTypeStr = MatchedCast->getType().getAsString();
-  
+
   std::string Fix;
 
   if (const auto *CharLit = Result.Nodes.getNodeAs<CharacterLiteral>("char");
@@ -104,6 +104,9 @@ void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
 
     Fix.append(CharPrefix[CastTypeStr]);
     Fix.append(CharRegex.sub("", LitText.str()));
+
+    diag(MatchedCast->getExprLoc(), "use builtin literals instead of casts")
+	  << FixItHint::CreateReplacement(MatchedCast->getSourceRange(), Fix.c_str());
   } else
   if (const auto *IntLit = Result.Nodes.getNodeAs<IntegerLiteral>("int");
       IntLit && IntSuffix.contains(CastTypeStr)) {
@@ -113,6 +116,9 @@ void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
 
     Fix.append(IntRegex.sub("", LitText.str()));
     Fix.append(IntSuffix[CastTypeStr]);
+
+    diag(MatchedCast->getExprLoc(), "use builtin literals instead of casts")
+	  << FixItHint::CreateReplacement(MatchedCast->getSourceRange(), Fix.c_str());
   } else
   if (const auto *FloatLit = Result.Nodes.getNodeAs<FloatingLiteral>("float");
       FloatLit && FloatSuffix.contains(CastTypeStr)) {
@@ -122,13 +128,9 @@ void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
 
     Fix.append(FloatRegex.sub("", LitText.str()));
     Fix.append(FloatSuffix[CastTypeStr]);
-  }
 
-  if(!Fix.empty()){
     diag(MatchedCast->getExprLoc(), "use builtin literals instead of casts")
 	  << FixItHint::CreateReplacement(MatchedCast->getSourceRange(), Fix.c_str());
-  } else {
-    diag(MatchedCast->getExprLoc(), "use builtin literals instead of casts");
   }
 }
 

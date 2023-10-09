@@ -1,29 +1,5 @@
 // RUN: %check_clang_tidy %s readability-use-builtin-literals %t
 
-void warn() {
-
-(char16_t)1.f;
-// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
-// CHECK-FIXES: (char16_t)1.f;
-(double)0x8badf00d;
-// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
-// CHECK-FIXES: (double)0x8badf00d;
-static_cast<unsigned long>('a');
-// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
-// CHECK-FIXES: static_cast<unsigned long>('a');
-float(1);
-// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
-// CHECK-FIXES: float(1);
-float{1};
-// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
-// CHECK-FIXES: float{1};
-
-(int)'a';
-// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
-// CHECK-FIXES: (int)'a';
-
-}
-
 void warn_and_fix() {
 
 (char16_t)U'a';
