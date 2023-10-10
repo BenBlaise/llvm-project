@@ -1,4 +1,4 @@
-// RUN: %check_clang_tidy %s readability-use-builtin-literals %t
+// RUN: %check_clang_tidy -std=c++20 %s readability-use-builtin-literals %t
 
 void warn_and_fix() {
 
