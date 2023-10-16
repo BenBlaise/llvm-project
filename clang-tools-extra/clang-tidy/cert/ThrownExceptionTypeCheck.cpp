@@ -23,7 +23,7 @@ void ThrownExceptionTypeCheck::registerMatchers(MatchFinder *Finder) {
 	    hasDeclaration(cxxConstructorDecl(ofClass(anyOf(
 		  has(cxxConstructorDecl(isCopyConstructor(), unless(isNoThrow()))),
 		  allOf(
-		    has(cxxConstructorDecl(isCopyConstructor())),
+		    has(cxxConstructorDecl(isCopyConstructor(), isDefaulted())),
 		    has(fieldDecl(hasType(cxxRecordDecl(
 		      has(cxxConstructorDecl(isCopyConstructor(), unless(isNoThrow())))
 		    ))))
@@ -40,7 +40,7 @@ void ThrownExceptionTypeCheck::registerMatchers(MatchFinder *Finder) {
 	    hasDeclaration(cxxConstructorDecl(ofClass(anyOf(
 		  has(cxxConstructorDecl(isCopyConstructor(), unless(isNoThrow()))),
 		  allOf(
-		    has(cxxConstructorDecl(isCopyConstructor())),
+		    has(cxxConstructorDecl(isCopyConstructor(), isDefaulted())),
 		    has(fieldDecl(hasType(cxxRecordDecl(
 		      has(cxxConstructorDecl(isCopyConstructor(), unless(isNoThrow())))
 		    ))))
