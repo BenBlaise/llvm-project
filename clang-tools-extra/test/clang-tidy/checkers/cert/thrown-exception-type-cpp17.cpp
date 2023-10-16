@@ -1,7 +1,5 @@
-// RUN: %check_clang_tidy -std=c++11,c++14 %s cert-err60-cpp %t -- -- -fcxx-exceptions
-// FIXME: Split off parts of this test that rely on dynamic exception
-// specifications, and run this test in all language modes.
-// FIXME: Fix the checker to work in C++17 or later mode.
+// RUN: %check_clang_tidy -std=c++17-or-later %s cert-err60-cpp %t -- -- -fcxx-exceptions
+
 struct S {};
 struct T : S {};
 struct U {
@@ -27,11 +25,6 @@ struct X {
 struct Y {
   Y() = default;
   Y(const Y&) throw();
-};
-
-struct Z {
-  Z() = default;
-  Z(const Z&) throw(int);
 };
 
 void g() noexcept(false);
@@ -96,8 +89,6 @@ void f() {
   throw X(); // match, no noexcept clause, nontrivial
   // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: thrown exception type is not nothrow copy constructible
   throw Y(); // ok
-  throw Z(); // match, throw(int)
-  // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: thrown exception type is not nothrow copy constructible
   throw A(); // match, noexcept(false)
   // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: thrown exception type is not nothrow copy constructible
   throw B(); // ok

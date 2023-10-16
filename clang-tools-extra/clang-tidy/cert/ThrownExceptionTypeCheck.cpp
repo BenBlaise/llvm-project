@@ -17,19 +17,45 @@ namespace clang::tidy::cert {
 
 void ThrownExceptionTypeCheck::registerMatchers(MatchFinder *Finder) {
   Finder->addMatcher(
-      traverse(
-          TK_AsIs,
-          cxxThrowExpr(has(ignoringParenImpCasts(
-              cxxConstructExpr(hasDeclaration(cxxConstructorDecl(
-                                   isCopyConstructor(), unless(isNoThrow()))))
-                  .bind("expr"))))),
-      this);
+    traverse(
+	  TK_AsIs,
+	  cxxThrowExpr(has(ignoringParenCasts(cxxConstructExpr(
+	    hasDeclaration(cxxConstructorDecl(ofClass(anyOf(
+		  has(cxxConstructorDecl(isCopyConstructor(), unless(isNoThrow()))),
+		  allOf(
+		    has(cxxConstructorDecl(isCopyConstructor())),
+		    has(fieldDecl(hasType(cxxRecordDecl(
+		      has(cxxConstructorDecl(isCopyConstructor(), unless(isNoThrow())))
+		    ))))
+		  )
+		))))
+	  ).bind("expr"))))
+	),
+    this
+  );
+  Finder->addMatcher(
+    traverse(
+	  TK_AsIs,
+	  cxxThrowExpr(has(ignoringParenCasts(cxxTemporaryObjectExpr(
+	    hasDeclaration(cxxConstructorDecl(ofClass(anyOf(
+		  has(cxxConstructorDecl(isCopyConstructor(), unless(isNoThrow()))),
+		  allOf(
+		    has(cxxConstructorDecl(isCopyConstructor())),
+		    has(fieldDecl(hasType(cxxRecordDecl(
+		      has(cxxConstructorDecl(isCopyConstructor(), unless(isNoThrow())))
+		    ))))
+		  )
+		))))
+	  ).bind("expr"))))
+	),
+    this
+  );
 }
 
 void ThrownExceptionTypeCheck::check(const MatchFinder::MatchResult &Result) {
   const auto *E = Result.Nodes.getNodeAs<Expr>("expr");
   diag(E->getExprLoc(),
-       "thrown exception type is not nothrow copy constructible");
+    "thrown exception type is not nothrow copy constructible");
 }
 
 } // namespace clang::tidy::cert
