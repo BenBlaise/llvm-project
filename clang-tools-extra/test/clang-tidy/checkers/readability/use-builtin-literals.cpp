@@ -1,4 +1,4 @@
-// RUN: %check_clang_tidy -std=c++20 %s readability-use-builtin-literals %t
+// RUN: %check_clang_tidy %s readability-use-builtin-literals %t
 
 void warn_and_fix() {
 
@@ -47,3 +47,23 @@ double{2.};
 
 }
 
+#define INT_MAX 2147483647
+#define MAXCOL 2
+
+void warn_and_recommend_fix() {
+
+static_cast<unsigned>(INT_MAX);
+// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin 'u' instead of cast to 'unsigned int' [readability-use-builtin-literals]
+(int)MAXCOL;
+// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin '' instead of cast to 'int' [readability-use-builtin-literals]
+}
+
+template <typename T>
+T f() {
+  return T(1);
+}
+
+int no_warn() {
+
+	return f<int>();
+}

@@ -82,22 +82,22 @@ llvm::StringMap<Replacement> FloatSuffix({
 } // namespace
 
 void UseBuiltinLiteralsCheck::registerMatchers(MatchFinder *Finder) {
-  Finder->addMatcher(
+  Finder->addMatcher(traverse(TK_IgnoreUnlessSpelledInSource,
       explicitCastExpr(
           (has(ignoringParenImpCasts(anyOf(
               characterLiteral().bind("char"),
 			  integerLiteral().bind("int"),
               floatLiteral().bind("float"))))))
-          .bind("expr"),
-      this);
-  Finder->addMatcher(
+          .bind("expr")
+  ), this);
+  Finder->addMatcher(traverse(TK_IgnoreUnlessSpelledInSource,
       explicitCastExpr(
           has(initListExpr(has(ignoringParenImpCasts(anyOf(
               characterLiteral().bind("char"),
 			  integerLiteral().bind("int"),
               floatLiteral().bind("float")))))))
-          .bind("expr"),
-      this);
+          .bind("expr")
+  ), this);
 }
 
 void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
@@ -117,8 +117,13 @@ void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
       StringRef LitText =
         getRawStringRef(CharLit->getLocation(), Sources, getLangOpts());
 
-      Fix.append(Replace.Seq);
-      Fix.append(CharRegex.sub("", LitText.str()));
+	  if(CharLit->getLocation().isMacroID()) {
+        diag(MatchedCast->getExprLoc(), "use builtin '%0' instead of cast to '%1'")
+		  << Replace.Seq.str() << CastTypeStr;
+	  } else {
+        Fix.append(Replace.Seq);
+        Fix.append(CharRegex.sub("", LitText.str()));
+	  }
 	}
   } else
   if (const auto *IntLit = Result.Nodes.getNodeAs<IntegerLiteral>("int");
@@ -128,8 +133,13 @@ void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
       StringRef LitText =
         getRawStringRef(IntLit->getLocation(), Sources, getLangOpts());
 
-      Fix.append(IntRegex.sub("", LitText.str()));
-      Fix.append(Replace.Seq);
+	  if(IntLit->getLocation().isMacroID()) {
+        diag(MatchedCast->getExprLoc(), "use builtin '%0' instead of cast to '%1'")
+		  << Replace.Seq.str() << CastTypeStr;
+	  } else {
+        Fix.append(IntRegex.sub("", LitText.str()));
+        Fix.append(Replace.Seq);
+	  }
 	}
   } else
   if (const auto *FloatLit = Result.Nodes.getNodeAs<FloatingLiteral>("float");
@@ -139,8 +149,13 @@ void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
       StringRef LitText =
         getRawStringRef(FloatLit->getLocation(), Sources, getLangOpts());
 
-      Fix.append(FloatRegex.sub("", LitText.str()));
-      Fix.append(Replace.Seq);
+	  if(FloatLit->getLocation().isMacroID()) {
+        diag(MatchedCast->getExprLoc(), "use builtin '%0' instead of cast to '%1'")
+		  << Replace.Seq.str() << CastTypeStr;
+	  } else {
+        Fix.append(FloatRegex.sub("", LitText.str()));
+        Fix.append(Replace.Seq);
+	  }
 	}
   }
 
