@@ -109,6 +109,7 @@ void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
   std::string CastTypeStr = MatchedCast->getTypeAsWritten().getAsString();
 
   std::string Fix;
+  StringRef Seq;
 
   if (const auto *CharLit = Result.Nodes.getNodeAs<CharacterLiteral>("char");
       CharLit && CharPrefix.contains(CastTypeStr)) {
@@ -117,10 +118,8 @@ void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
       StringRef LitText =
         getRawStringRef(CharLit->getLocation(), Sources, getLangOpts());
 
-	  if(CharLit->getLocation().isMacroID()) {
-        diag(MatchedCast->getExprLoc(), "use builtin '%0' instead of cast to '%1'")
-		  << Replace.Seq.str() << CastTypeStr;
-	  } else {
+	  Seq = Replace.Seq;
+	  if(!CharLit->getLocation().isMacroID()) {
         Fix.append(Replace.Seq);
         Fix.append(CharRegex.sub("", LitText.str()));
 	  }
@@ -133,10 +132,8 @@ void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
       StringRef LitText =
         getRawStringRef(IntLit->getLocation(), Sources, getLangOpts());
 
-	  if(IntLit->getLocation().isMacroID()) {
-        diag(MatchedCast->getExprLoc(), "use builtin '%0' instead of cast to '%1'")
-		  << Replace.Seq.str() << CastTypeStr;
-	  } else {
+	  Seq = Replace.Seq;
+	  if(!IntLit->getLocation().isMacroID()) {
         Fix.append(IntRegex.sub("", LitText.str()));
         Fix.append(Replace.Seq);
 	  }
@@ -149,19 +146,20 @@ void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
       StringRef LitText =
         getRawStringRef(FloatLit->getLocation(), Sources, getLangOpts());
 
-	  if(FloatLit->getLocation().isMacroID()) {
-        diag(MatchedCast->getExprLoc(), "use builtin '%0' instead of cast to '%1'")
-		  << Replace.Seq.str() << CastTypeStr;
-	  } else {
+	  Seq = Replace.Seq;
+	  if(!FloatLit->getLocation().isMacroID()) {
         Fix.append(FloatRegex.sub("", LitText.str()));
         Fix.append(Replace.Seq);
 	  }
 	}
   }
 
-  if(!Fix.empty()){
+  if(!Fix.empty()) {
     diag(MatchedCast->getExprLoc(), "use builtin literals instead of casts")
 	  << FixItHint::CreateReplacement(MatchedCast->getSourceRange(), Fix.c_str());
+  } else if(!Seq.empty() && MatchedCast->getExprLoc().isMacroID()) {
+    diag(MatchedCast->getExprLoc(), "use builtin '%0' instead of cast to '%1'")
+	  << Seq.str() << CastTypeStr;
   }
 }
 

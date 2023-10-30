@@ -45,18 +45,27 @@ double{2.};
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
 // CHECK-FIXES: 2.;
 
+reinterpret_cast<int>(1);
+// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
+// CHECK-FIXES: 1;
+
+}
+
+#define OPSHIFT ((unsigned)27)
+#define OCHAR (2LU<<OPSHIFT)
+#define OPSHIFT2 (27)
+#define OCHAR2 (2LU<<(unsigned)OPSHIFT2)
+
+void warn_and_recommend_fix() {
+
+OCHAR;
+// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin 'u' instead of cast to 'unsigned int' [readability-use-builtin-literals]
+OCHAR2;
+// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin 'u' instead of cast to 'unsigned int' [readability-use-builtin-literals]
 }
 
 #define INT_MAX 2147483647
 #define MAXCOL 2
-
-void warn_and_recommend_fix() {
-
-static_cast<unsigned>(INT_MAX);
-// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin 'u' instead of cast to 'unsigned int' [readability-use-builtin-literals]
-(int)MAXCOL;
-// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin '' instead of cast to 'int' [readability-use-builtin-literals]
-}
 
 template <typename T>
 T f() {
@@ -65,5 +74,11 @@ T f() {
 
 int no_warn() {
 
-	return f<int>();
+(void)0;
+(unsigned*)0;
+
+
+static_cast<unsigned>(INT_MAX);
+(unsigned)MAXCOL;
+return f<int>();
 }
