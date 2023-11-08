@@ -18,8 +18,9 @@ namespace clang::tidy::readability {
 /// literals. Removes any suffixes or prefixes before applying the one that
 /// corresponds to the type of the cast.
 ///
-/// Literals casted to a different type will be found, but will not yield a
-/// suggestion for an automatic fix.
+/// An explicit cast within a macro will be matched, but will only yield a
+/// suggestion for a manual fix. Otherwise, if either the destination type or
+/// the literal was substituted from a macro, no warning will be produced.
 ///
 /// For the user-facing documentation see:
 /// http://clang.llvm.org/extra/clang-tidy/checks/readability/use-builtin-literals.html

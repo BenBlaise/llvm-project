@@ -154,7 +154,9 @@ void UseBuiltinLiteralsCheck::check(const MatchFinder::MatchResult &Result) {
 	}
   }
 
-  if(!Fix.empty()) {
+  const TypeLoc CastTypeLoc = MatchedCast->getTypeInfoAsWritten()->getTypeLoc();
+
+  if(!Fix.empty() && !CastTypeLoc.getBeginLoc().isMacroID()) {
     diag(MatchedCast->getExprLoc(), "use builtin literals instead of casts")
 	  << FixItHint::CreateReplacement(MatchedCast->getSourceRange(), Fix.c_str());
   } else if(!Seq.empty() && MatchedCast->getExprLoc().isMacroID()) {

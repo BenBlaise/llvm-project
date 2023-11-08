@@ -55,6 +55,8 @@ reinterpret_cast<int>(1);
 #define OCHAR (2LU<<OPSHIFT)
 #define OPSHIFT2 (27)
 #define OCHAR2 (2LU<<(unsigned)OPSHIFT2)
+#define SUBT unsigned
+#define OCHAR3 (2LU<<(SUBT)27)
 
 void warn_and_recommend_fix() {
 
@@ -62,10 +64,18 @@ OCHAR;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin 'u' instead of cast to 'unsigned int' [readability-use-builtin-literals]
 OCHAR2;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin 'u' instead of cast to 'unsigned int' [readability-use-builtin-literals]
+OCHAR3;
+// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin 'u' instead of cast to 'unsigned int' [readability-use-builtin-literals]
 }
 
 #define INT_MAX 2147483647
 #define MAXCOL 2
+
+#ifdef CHECKED
+#define SUINT int
+#else
+#define SUINT unsigned
+#endif
 
 template <typename T>
 T f() {
@@ -77,8 +87,10 @@ int no_warn() {
 (void)0;
 (unsigned*)0;
 
-
 static_cast<unsigned>(INT_MAX);
 (unsigned)MAXCOL;
+
+(SUINT)31;
+
 return f<int>();
 }
