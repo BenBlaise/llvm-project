@@ -17,16 +17,16 @@ void warn_and_fix() {
 // CHECK-FIXES: 0x1u;
 (long int)2l;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
-// CHECK-FIXES: 2l;
+// CHECK-FIXES: 2L;
 (unsigned long int)0x2lu;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
-// CHECK-FIXES: 0x2ul;
+// CHECK-FIXES: 0x2uL;
 (long long int)3ll;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
-// CHECK-FIXES: 3ll;
+// CHECK-FIXES: 3LL;
 (unsigned long long int)0x3llu;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
-// CHECK-FIXES: 0x3ull;
+// CHECK-FIXES: 0x3uLL;
 
 (double)1.f;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
@@ -36,12 +36,16 @@ void warn_and_fix() {
 // CHECK-FIXES: 2.f;
 (long double)3e0f;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
-// CHECK-FIXES: 3e0l;
+// CHECK-FIXES: 3e0L;
 
 float(2.);
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
 // CHECK-FIXES: 2.f;
 double{2.};
+// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
+// CHECK-FIXES: 2.;
+
+static_cast<double>(2.f);
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin literals instead of casts [readability-use-builtin-literals]
 // CHECK-FIXES: 2.;
 
@@ -60,6 +64,8 @@ reinterpret_cast<int>(1);
 
 void warn_and_recommend_fix() {
 
+OPSHIFT;
+// CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin 'u' instead of cast to 'unsigned int' [readability-use-builtin-literals]
 OCHAR;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use builtin 'u' instead of cast to 'unsigned int' [readability-use-builtin-literals]
 OCHAR2;
